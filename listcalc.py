@@ -6,6 +6,25 @@ import decimal
 import argparse
 
 
+def main():
+    """Main program loop"""
+    print("""Mean list calculator by Joseph. T. Foley<foley AT ru DOT is>
+    From https://github.com/foleyj2/teaching-tools""")
+    parser = argparse.ArgumentParser(
+        description="Do some repeated calculations on lists of numbers.")
+    parser.add_argument('--stoplen', dest='stoplen', type=int,
+                        help='Stop calculation after N values.')
+    parser.add_argument('--maxval', type=Decimal,
+                        help='Max value for each grading element.')
+
+    args = parser.parse_args()
+    calc = Listcalc(stoplen=args.stoplen, maxval=args.maxval)
+    while True:
+        calc.getvals()
+        calc.mean()
+        calc.reset()
+
+
 class Listcalc():
     """Take a list of values and do something useful."""
     accum = []
@@ -79,19 +98,7 @@ class Listcalc():
         except ValueError:
             pass
 
+        
 
 if __name__ == '__main__':  # Main invocation
-    print("Mean list calculator by Joseph. T. Foley<foley AT ru DOT is>")
-    PARSER = argparse.ArgumentParser(
-        description="Do some repeated calculations on lists of numbers.")
-    PARSER.add_argument('--stoplen', dest='stoplen', type=int,
-                        help='Stop calculation after N values.')
-    PARSER.add_argument('--maxval', type=Decimal,
-                        help='Max value for each grading element.')
-
-    ARGS = PARSER.parse_args()
-    CALC = Listcalc(stoplen=ARGS.stoplen, maxval=ARGS.maxval)
-    while True:
-        CALC.getvals()
-        CALC.mean()
-        CALC.reset()
+    main()
