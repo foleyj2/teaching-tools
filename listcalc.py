@@ -36,12 +36,15 @@ class Listcalc():
 
         if self.maxval:  # grading points case:  total divided by maximum
             mybase = mybase*self.maxval
-            mymean = mysum/mybase
-            percentage = Decimal(100*mymean.quantize(Decimal('.1'),
-                                                     rounding=ROUND_HALF_UP))
-            tengrade = Decimal(10*mymean.quantize(Decimal('.1'),
+            myscore = mysum/mybase
+            myscore_rounded = myscore.quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
+            percentage = 100*myscore
+            percentage_rounded = percentage.quantize(Decimal('.1'), rounding=ROUND_HALF_UP)
+            tengrade = 10*myscore
+            tengrade_rounded = tengrade.quantize(Decimal('.1'), rounding=ROUND_HALF_UP)
+            tengrade = Decimal(10*myscore.quantize(Decimal('.01'),
                                                   rounding=ROUND_HALF_UP))
-            print(f"{val_log} => {mysum}/{mybase} = {percentage}% ~ {tengrade}/10")
+            print(f"{val_log} => {mysum}/{mybase} = {myscore_rounded} =  {percentage_rounded}% ~ {tengrade_rounded}/10")
         else:  # normal case:  straight average
             mymean = mysum/mybase
             output = Decimal(mymean.quantize(Decimal('.1'),
@@ -56,7 +59,8 @@ class Listcalc():
     def getval(self, src="kbd"):
         """Get a value from somewhere and put it in the accumulator"""
         if src == "kbd":
-            myinput = (input("val: "))
+            currentindex = len(self.accum)+1 #humans like indexes to start at 1
+            myinput = (input(f"val{currentindex}: "))
             if myinput in ("x", "X", "q", "Q", "quit"):
                 sys.exit("Quit!")
         else:
