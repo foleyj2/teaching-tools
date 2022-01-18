@@ -26,7 +26,7 @@ def main():
 
 
 class Listcalc():
-    """Take a list of values and do something useful."""
+    """Get a list of values from somewhere and do something useful."""
     accum = []
     stoplen = None
 
