@@ -4,7 +4,8 @@ from decimal import Decimal, ROUND_HALF_UP
 import sys
 import decimal
 import argparse
-
+from datetime import datetime
+import logging
 
 def main():
     """Main program loop"""
@@ -16,7 +17,10 @@ def main():
                         help='Stop calculation after N values.')
     parser.add_argument('--maxval', type=Decimal,
                         help='Max value for each grading element.')
-
+    datestring = 'listcalc-{:%Y%m%d-%H%M%S}.log'.format(datetime.now())
+    logging.basicConfig(filename=datestring, level=logging.INFO)
+    logging.info(f"Creating Listcalc log file {datestring}")
+    
     args = parser.parse_args()
     calc = Listcalc(stoplen=args.stoplen, maxval=args.maxval)
     while True:
