@@ -7,6 +7,7 @@ import argparse
 from datetime import datetime
 import logging
 
+
 def main():
     """Main program loop"""
     print("""Mean list calculator by Joseph. T. Foley<foley AT ru DOT is>
@@ -17,11 +18,18 @@ def main():
                         help='Stop calculation after N values.')
     parser.add_argument('--maxval', type=Decimal,
                         help='Max value for each grading element.')
-    datestring = 'listcalc-{:%Y%m%d-%H%M%S}.log'.format(datetime.now())
-    logging.basicConfig(filename=datestring, level=logging.INFO)
-    logging.info(f"Creating Listcalc log file {datestring}")
-    
+    parser.add_argument('--log', default="INFO",
+        help='Log level:  Number or DEBUG, INFO, WARNING, ERROR')
     args = parser.parse_args()
+    numeric_level = getattr(logging, args.log.upper(), None)
+    if not isinstance(numeric_level, int):
+        raise ValueError('Invalid log level: %s' % args.log)
+    datestring = 'listcalc-{:%Y%m%d-%H%M%S}.log'.format(datetime.now())
+    logging.basicConfig(format='%(message)s',
+                        filename=datestring, level=numeric_level)
+    logging.info("Creating Listcalc log file %s", datestring)
+
+
     calc = Listcalc(stoplen=args.stoplen, maxval=args.maxval)
     while True:
         calc.getvals()
@@ -67,12 +75,16 @@ class Listcalc():
             tengrade_rounded = tengrade.quantize(Decimal('.1'), rounding=ROUND_HALF_UP)
             tengrade = Decimal(10*myscore.quantize(Decimal('.01'),
                                                   rounding=ROUND_HALF_UP))
-            print(f"{val_log} => {mysum}/{mybase} = {myscore_rounded} =  {percentage_rounded}% ~ {tengrade_rounded}/10")
+            displayval = f"{val_log} => {mysum}/{mybase} = {myscore_rounded} =  {percentage_rounded}% ~ {tengrade_rounded}/10"
+            print(displayval)
+            logging.info(displayval)
         else:  # normal case:  straight average
             mymean = mysum/mybase
             output = Decimal(mymean.quantize(Decimal('.1'),
                                              rounding=ROUND_HALF_UP))
-            print(f"{val_log} => {mysum}/{mybase} = {output}")
+            displayval = f"{val_log} => {mysum}/{mybase} = {output}"
+            print(displayval)
+            logging.info(displayval)
         # for grading purpose, students want more information
 
     def reset(self):
