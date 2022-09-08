@@ -32,15 +32,13 @@ SubTypes = ("BASE", #0 base class
             )
 
 def main():
-  # TODO:  modularize for use in other tools
-  # TODO:  better argument parsing
   input_filename = sys.argv[1]
   document = Poppler.Document.load(input_filename)
   n_pages = document.numPages()
-  all_annots = 0
 
   for i in range(n_pages):
-    page = document.page(i)    
+    page = document.page(i)
+    print(f"Processing page {i+1}")
     for annotation in page.annotations():
       subtype_num = annotation.subType()
       subtype = SubTypes[subtype_num]
@@ -51,8 +49,6 @@ def main():
       if subtype in {"Text","Highlight"}:     
         print(f"Annotation suitable for grading: '{annotation.contents()}'")
                                   
-      #print(f"SubType:TextAnnotation: {annotation.SubType()}")
-      ## Poppler::Annotation::SubType TextAnnoation
     if len(page.annotations()) < 1:      
       print("no annotations found")
 
