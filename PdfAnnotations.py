@@ -52,12 +52,12 @@ class PdfAnnotations():
         self.annotations.append(anno_record)
 
 
-  def extract_comments(self):
-    "Dump out all of the comments in a list"
-    ## For grading purposes, I only care about the Highlight and Text
-    ## annoation subtypes
+  def extract_comments(self, subtypes={"Text","Highlight"}):
+    """Dump out all of the comments in a list
+    For grading purposes, I only care about the Highlight and Text
+    annoation subtypes"""
     for annotation in self.annotations:
-      if annotation['subtype'] in {"Text","Highlight"}:     
+      if annotation['subtype'] in subtypes:    
         print(f"Annotation suitable for grading: '{annotation['contents']}'")
 
   
