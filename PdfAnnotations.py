@@ -35,13 +35,11 @@ class PdfAnnotations():
               "Widget", #13 widget (form field) on a page
               "RichMedia" #14 video or sound on a page.
               )
+  
   def __init__(self, pdfpath):
     # load from file
+    self.annotations = []
     self.document = Poppler.Document.load(pdfpath)
-
-    # build our database
-  def extract_comments(self):
-    "Dump out all of the comments in a list"
     n_pages = self.document.numPages()
     for i in range(n_pages):
       page = self.document.page(i)
@@ -49,12 +47,18 @@ class PdfAnnotations():
       for annotation in page.annotations():
         subtype_num = annotation.subType()
         subtype = self.SubTypes[subtype_num]
-        print(f"{subtype_num}={subtype}: {annotation.contents()}")
+        #print(f"{subtype_num}={subtype}: {annotation.contents()}")
+        anno_record = { "page": page, "subtype": subtype, "contents": annotation.contents() }
+        self.annotations.append(anno_record)
 
-      ## For grading purposes, I only care about the Highlight and Text
-      ## annoation subtypes
-      if subtype in {"Text","Highlight"}:     
-        print(f"Annotation suitable for grading: '{annotation.contents()}'")
+
+  def extract_comments(self):
+    "Dump out all of the comments in a list"
+    ## For grading purposes, I only care about the Highlight and Text
+    ## annoation subtypes
+    for annotation in self.annotations:
+      if annotation['subtype'] in {"Text","Highlight"}:     
+        print(f"Annotation suitable for grading: '{annotation['contents']}'")
 
   
 def main():
@@ -79,10 +83,9 @@ def main():
     logging.info("Creating PdfAnnotations log file %s", datestring)
 
     for filepath in args.filepaths:
+      print(f"File: {filepath}")
       PA = PdfAnnotations(filepath)
       PA.extract_comments()
-
-
 
                                   
 if __name__ == "__main__":
