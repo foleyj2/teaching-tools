@@ -1,0 +1,44 @@
+\documentclass[11pt,a4paper]{article}
+% Note draft will skip inclusion/graphics but is needed for annotations
+\usepackage[draft]{pdfcomment}
+\usepackage{lipsum}
+\usepackage{url}
+\usepackage{stix2}
+\title{Test Document for PDF Annotations and Grading}
+\author{Joseph Timothy Foley}
+\date{\today}
+% TODO: Convert to teaching tools documentation?
+% TODO: Urls and hyperref
+\usepackage{hyperref}
+\begin{document}
+\maketitle{}
+\newcommand{\texmacro}[1]{\texttt{\textbackslash#1}}
+\section{Introduction}
+This is the introduction.
+We will be using the \path{pdfcomment.sty} \LaTeX{} package to automatically generate some annotations to start.
+Documentation for the package at \url{https://ctan.uib.no/macros/latex/contrib/pdfcomment/doc/pdfcomment.pdf}
+On this sentence, we use \texmacro{pdfsidelinecomment}\pdfsidelinecomment{Here's the sideline comment!} for instance which I am not sure the annotation detector will find.
+
+For putting comments at some point in the text, we use \texmacro{pdfcomment}\pdfcomment{A PDF comment, yay!}.
+Perhaps you prefer them to go in the margin; then you used use \texmacro{pdfmargincomment}\pdfmargincomment{Marginal comments work like this.}
+
+\texmacro{pdfmarkupcomment} is a more general macro:
+To highlight something of interest \pdfmarkupcomment[markup=Highlight]{like a particular memory of a rose petal,}{TODO:\@ figure out how to change the highlight color to a nice yellow} use the markup option Highlight.
+To underline for \pdfmarkupcomment[markup=Squiggly]{emphasis from the editor}{The squiggly will make you pay attention!} use the markup option Squiggly.
+Perhaps a word is spelled \pdfmarkupcomment[markup=StrikeOut]{incorecctly}{Spelled it wrong!}, then you would probably give it the markup option StrikeOut.
+If you just want to put a comment somewhere random on the page\pdffreetextcomment[type=freetext, voffset=-1.5cm, hoffset=-1cm, height=1cm, width=5cm]{Not quite random, it does need to go somewhere.}, you can use \texmacro{pdffreetextcomment} with the option type freetext. 
+
+\section{Prior Art}
+\lipsum[2]
+\section{Design}
+\lipsum[3]
+\section{Prototyping}
+\lipsum[4]
+\section{Conclusion}
+\lipsum[5]
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

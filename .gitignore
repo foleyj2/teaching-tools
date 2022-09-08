@@ -130,3 +130,10 @@ dmypy.json
 
 # Emacs
 .#-emacs*
+*.aux
+*.out
+/testpdfannotations.pdf
+*~
+*.upa
+*.upb
+/auto/
