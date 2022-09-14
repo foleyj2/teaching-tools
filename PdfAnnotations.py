@@ -13,6 +13,7 @@ from popplerqt5 import Poppler
 import sys
 #import urllib ##might be useful for extracting from web documents
 import os
+from pathlib import PurePath##https://docs.python.org/3/library/pathlib.html#module-pathlib
 import argparse
 import logging
 from datetime import datetime
@@ -72,6 +73,8 @@ def main():
     parser.add_argument('filepaths', nargs=argparse.REMAINDER)
     parser.add_argument('--log', default="INFO",
         help='Log level:  Number or DEBUG, INFO, WARNING, ERROR')
+    parser.add_argument('--ext', default=".cmt",
+                        help='Extension for output')
     ## TODO:  rest of args are filename
     args = parser.parse_args()
     numeric_level = getattr(logging, args.log.upper(), None)
@@ -83,7 +86,10 @@ def main():
     logging.info("Creating PdfAnnotations log file %s", datestring)
 
     for filepath in args.filepaths:
-      print(f"File: {filepath}")
+      # filename pre-processing for output
+      inpath = PurePath(filepath)
+      outpath = inpath.with_suffix(args.ext)
+      print(f"File: {inpath} -> {outpath}")
       PA = PdfAnnotations(filepath)
       PA.extract_comments()
 
