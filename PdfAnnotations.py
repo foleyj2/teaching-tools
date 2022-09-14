@@ -76,7 +76,6 @@ def main():
         help='Log level:  Number or DEBUG, INFO, WARNING, ERROR')
     parser.add_argument('--ext', default=".cmt",
                         help='Extension for output')
-    ## TODO:  rest of args are filename
     args = parser.parse_args()
     numeric_level = getattr(logging, args.log.upper(), None)
     if not isinstance(numeric_level, int):
