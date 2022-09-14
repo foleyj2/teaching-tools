@@ -53,13 +53,14 @@ class PdfAnnotations():
         self.annotations.append(anno_record)
 
 
-  def extract_comments(self, subtypes={"Text","Highlight"}):
+  def extract_comments(self, outfd=sys.stderr, subtypes={"Text","Highlight"}):
     """Dump out all of the comments in a list
     For grading purposes, I only care about the Highlight and Text
     annoation subtypes"""
     for annotation in self.annotations:
-      if annotation['subtype'] in subtypes:    
-        print(f"Annotation suitable for grading: '{annotation['contents']}'")
+      if annotation['subtype'] in subtypes:
+        print(annotation['contents'],
+              file=outfd)
 
   
 def main():
@@ -91,7 +92,8 @@ def main():
       outpath = inpath.with_suffix(args.ext)
       print(f"File: {inpath} -> {outpath}")
       PA = PdfAnnotations(filepath)
-      PA.extract_comments()
+      with open(outpath, "w") as outfd:
+        PA.extract_comments(outfd)
 
                                   
 if __name__ == "__main__":
