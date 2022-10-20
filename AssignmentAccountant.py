@@ -13,15 +13,16 @@ import re
 class AssignmentAccountant():
     def __init__(self,infd):
         for line in infd:
-            line = line.strip().rstrip()
+            maybelines = line.strip().rstrip()
+            for line in maybelines.splitlines():# in case it is a multiline comment
             #print(f"line: '{line}'")
             # detect grading comment
             # at least 2 capital letters possibly followed by a number and/or exclamation,
             # then sometimes (CODE), sometimes with a colon
-            detect_grade_re = re.compile(r'(^[A-Z]{2,}\d?\!?)(\(\S+\))?\:?(.*)')
-            checkedline = detect_grade_re.match(line)
-            if checkedline:
-                print(f"CODE: {checkedline.group(1)} OPTVAL: {checkedline.group(2)} COMMENT: {checkedline.group(3)}")
+                detect_grade_re = re.compile(r'(^[A-Z]{2,}\d?\!?)(\(\S+\))?\:?(.*)')
+                checkedline = detect_grade_re.match(line)
+                if checkedline:
+                    print(f"CODE: {checkedline.group(1)} OPTVAL: {checkedline.group(2)} COMMENT: {checkedline.group(3)}")
 
     def dump_values(self,outfd):
         '''Given a file descriptor, iterate line by line and parse comments'''
