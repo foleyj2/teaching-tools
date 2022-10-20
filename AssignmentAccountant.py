@@ -16,9 +16,9 @@ class AssignmentAccountant():
             line = line.strip().rstrip()
             #print(f"line: '{line}'")
             # detect grading comment
-            # 3-4 capital letters possibly followed by a number and/or exclamation,
+            # at least 2 capital letters possibly followed by a number and/or exclamation,
             # then sometimes (CODE), sometimes with a colon
-            detect_grade_re = re.compile(r'(^[A-Z]{3,4}\d?\!?)(\(\S+\))?\:?(.*)')
+            detect_grade_re = re.compile(r'(^[A-Z]{2,}\d?\!?)(\(\S+\))?\:?(.*)')
             checkedline = detect_grade_re.match(line)
             if checkedline:
                 print(f"CODE: {checkedline.group(1)} OPTVAL: {checkedline.group(2)} COMMENT: {checkedline.group(3)}")
