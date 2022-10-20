@@ -137,3 +137,7 @@ dmypy.json
 *.upa
 *.upb
 /auto/
+
+# application temporary output files
+*.act
+*.cmt
