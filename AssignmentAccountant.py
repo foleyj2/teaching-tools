@@ -53,8 +53,17 @@ def main():
       inpath = PurePath(filepath)
       outpath = inpath.with_suffix(args.ext)
       print(f"File: {inpath} -> {outpath}")
-      with open(outpath, "w") as outfd, open(inpath) as infd:
-          AA = AssignmentAccountant(infd)
+      input = None
+      # Is this a PDF? If so, we need to extract the comments
+      if inpath.suffix == ".pdf":
+          import PdfAnnotations
+          pdfannotations = PdfAnnotations.PdfAnnotations(inpath)
+          input = pdfannotations.extract_comments()
+      else:
+          input = open(inpath)
+      
+      with open(outpath, "w") as outfd:
+          AA = AssignmentAccountant(input)
           AA.dump_values(outfd)
 if __name__ == "__main__":
   main()

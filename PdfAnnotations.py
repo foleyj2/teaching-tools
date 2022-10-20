@@ -40,7 +40,7 @@ class PdfAnnotations():
   def __init__(self, pdfpath):
     # load from file
     self.annotations = []
-    self.document = Poppler.Document.load(pdfpath)
+    self.document = Poppler.Document.load(str(pdfpath))
     n_pages = self.document.numPages()
     for i in range(n_pages):
       page = self.document.page(i)
