@@ -53,16 +53,16 @@ class PdfAnnotations():
         self.annotations.append(anno_record)
 
 
-  def extract_comments(self, outfd=sys.stderr, subtypes={"Text","Highlight"}):
+  def extract_comments(self, subtypes={"Text","Highlight"}):
     """Dump out all of the comments in a list
     For grading purposes, I only care about the Highlight and Text
-    annoation subtypes"""
+    annoation subtypes so they are default"""
+    commentlist = []
     for annotation in self.annotations:
       if annotation['subtype'] in subtypes:
-        print(annotation['contents'],
-              file=outfd)
+        commentlist.append(annotation['contents'])
+    return(commentlist)
 
-  
 def main():
     """Main program loop"""
     print("""PDF Annotation Processor by Joseph. T. Foley<foley AT ru DOT is>
@@ -91,8 +91,10 @@ def main():
       outpath = inpath.with_suffix(args.ext)
       print(f"File: {inpath} -> {outpath}")
       PA = PdfAnnotations(filepath)
+      COMMENTS = PA.extract_comments()
       with open(outpath, "w") as outfd:
-        PA.extract_comments(outfd)
+        for comment in COMMENTS:
+          print(comment)
 
                                   
 if __name__ == "__main__":
