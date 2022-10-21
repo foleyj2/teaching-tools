@@ -46,6 +46,15 @@ class AssignmentAccountant():
         # if there's a string in there, don't mess with it
         if isinstance(keyval, str):
             return
+        def updateentry(keyval, increment=None):
+            if always_inc: # increment even if negative
+                increment = abs(increment)
+            if increment:
+                self.Ledger[keycode] = keyval + increment
+            else:
+                self.Ledger[keycode] = keyval
+            self.logger.info(f"keycode:{keycode} keyval:{keyval}, increment:{increment}")
+        
         # what is going on with opval?
         increment = 0
         if optval is None:
@@ -56,8 +65,11 @@ class AssignmentAccountant():
             try:
                 x = float(optval)
                 increment = Decimal(optval)
+                updateentry(keyval, increment)
+                return
             except ValueError:
                 pass # not a valid number
+
             if optval.startswith('='): # Force value
                 optval = optval.removeprefix('=')
                 increment = 0
@@ -65,20 +77,16 @@ class AssignmentAccountant():
             else:
                 # might be string command
                 keyval = optval
-                self.Ledger[keycode] = keyval
-                return
+                increment = 0
         
         else:
             logger.error(f"Unknown value/command:  '{optval}' of type {type(optval)}")
-
-        if always_inc: # increment even if negative
-            increment = abs(increment)
-        self.Ledger[keycode] = keyval + increment
-        self.logger.info(f"keycode:{keycode} keyval:{keyval}, increment:{increment}")
-
+        updateentry(keyval, increment)
+                
     def dump_values(self,outfd):
         '''Given a file descriptor, iterate line by line output the database'''
-        
+        keyvals = sorted(self.Ledger.items())
+        print(keyvals)
 
 def main():
     """Main program loop"""
