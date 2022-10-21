@@ -8,11 +8,15 @@ from pathlib import PurePath##https://docs.python.org/3/library/pathlib.html#mod
 import argparse
 import logging
 from datetime import datetime
+from decimal import *
 import re
 
 class AssignmentAccountant():
-    Ledger = {}
+    Ledger = dict()
     def __init__(self, infd, logger):
+        self.logger = logger
+        detect_grade_re = re.compile(r'(^[A-Z]{2,}\d?\!?)(\(\S+\))?\:?(.*)')
+        strip_outer_parens_re = re.compile(r'\((.*)\)')
         for line in infd:
             maybelines = line.strip().rstrip()
             for line in maybelines.splitlines():# in case it is a multiline comment
@@ -20,16 +24,42 @@ class AssignmentAccountant():
             # detect grading comment
             # at least 2 capital letters possibly followed by a number and/or exclamation,
             # then sometimes (CODE), sometimes with a colon
-                detect_grade_re = re.compile(r'(^[A-Z]{2,}\d?\!?)(\(\S+\))?\:?(.*)')
+                
                 checkedline = detect_grade_re.match(line)
                 if checkedline:
                     code, optval, comment = checkedline.groups()
+                    if optval:
+                        optval_match = strip_outer_parens_re.match(optval)
+                        if optval_match:
+                            optval = optval_match.group(1)
+                            
                     logger.warning(f"CODE: {code} OPTVAL: {optval} COMMENT: {comment}")
                     self.parse_values(code, optval, comment)
     def parse_values(self, code, optval, comment):
         """Take comment and turn into operations on ledger"""
-        pass
+        logger = self.logger
+        # examine code first
+        # STUB:  Just use as is
+        keycode = code
+        # got a key, time to update value
+        keyval = self.Ledger.setdefault(keycode, 0)
+        # what is going on with opval?
+        increment = 0
+        if optval is None:
+            increment = 1
+        elif optval is int:
+            increment = Decimal(optval)
+        elif optval is str:
+            if optval.isnumeric():
+                increment = Decimal(optval)
+            else:
+                pass
+        else:
+            logger.error(f"Unknown argument:  {optval}")
 
+            
+        self.Ledger[keycode] = keyval + increment
+        self.logger.info(f"keycode:{keycode} keyval:{keyval}, increment:{increment}")
     def dump_values(self,outfd):
         '''Given a file descriptor, iterate line by line and parse comments'''
         pass
