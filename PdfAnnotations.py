@@ -37,8 +37,9 @@ class PdfAnnotations():
               "RichMedia" #14 video or sound on a page.
               )
   
-  def __init__(self, pdfpath):
+  def __init__(self, pdfpath,logger):
     # load from file
+    self.logger = logger
     self.annotations = []
     self.document = Poppler.Document.load(str(pdfpath))
     n_pages = self.document.numPages()
@@ -80,17 +81,32 @@ def main():
     numeric_level = getattr(logging, args.log.upper(), None)
     if not isinstance(numeric_level, int):
         raise ValueError('Invalid log level: %s' % args.log)
-    datestring = 'PdfAnnotations-{:%Y%m%d-%H%M%S}.log'.format(datetime.now())
-    logging.basicConfig(format='%(message)s',
-                        filename=datestring, level=numeric_level)
-    logging.info("Creating PdfAnnotations log file %s", datestring)
+    print(f"Log level:  {numeric_level}")
+    logger = logging.getLogger("app")
+    logger.setLevel(logging.INFO)
+    # log everything to file
+    logpath = 'PdfAnnotation-{:%Y%m%d-%H%M%S}.log'.format(datetime.now())
+    fh = logging.FileHandler(logpath)
+    fh.setLevel(logging.DEBUG)
+    # log to console
+    ch = logging.StreamHandler()
+    ch.setLevel(numeric_level)
+    # create formatter and add to handlers
+    consoleformatter = logging.Formatter('%(message)s')
+    ch.setFormatter(consoleformatter)
+    spamformatter = logging.Formatter('%(asctime)s %(name)s[%(levelname)s] %(message)s')
+    fh.setFormatter(spamformatter)
+    # add the handlers to logger
+    logger.addHandler(ch)
+    logger.addHandler(fh)
+    logger.info("Creating PdfAnnotations log file %s", logpath)
 
     for filepath in args.filepaths:
       # filename pre-processing for output
       inpath = PurePath(filepath)
       outpath = inpath.with_suffix(args.ext)
       print(f"File: {inpath} -> {outpath}")
-      PA = PdfAnnotations(filepath)
+      PA = PdfAnnotations(filepath,logger)
       COMMENTS = PA.extract_comments()
       with open(outpath, "w") as outfd:
         for comment in COMMENTS:
