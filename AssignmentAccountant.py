@@ -74,7 +74,7 @@ class AssignmentAccountant():
                 optval = optval.removeprefix('=')
                 increment = 0
                 keyval = Decimal(optval)
-            else:
+            else:  # "It's not stupid.  It's AAADVANCED" -- The Tallest, Invader Zim
                 # might be string command
                 keyval = optval
                 increment = 0
