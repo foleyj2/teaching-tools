@@ -35,7 +35,7 @@ class AssignmentAccountant():
                             
                     logger.warning(f"CODE: {code} OPTVAL: {optval} COMMENT: {comment}")
                     self.parse_values(code, optval, comment)
-    def parse_values(self, code, optval, comment):
+    def parse_values(self, code, optval, comment, always_inc=True):
         """Take comment and turn into operations on ledger"""
         logger = self.logger
         # examine code first
@@ -43,26 +43,42 @@ class AssignmentAccountant():
         keycode = code
         # got a key, time to update value
         keyval = self.Ledger.setdefault(keycode, 0)
+        # if there's a string in there, don't mess with it
+        if isinstance(keyval, str):
+            return
         # what is going on with opval?
         increment = 0
         if optval is None:
             increment = 1
-        elif optval is int:
+        elif isinstance(optval,int):
             increment = Decimal(optval)
-        elif optval is str:
-            if optval.isnumeric():
+        elif isinstance(optval, str):
+            try:
+                x = float(optval)
                 increment = Decimal(optval)
+            except ValueError:
+                pass # not a valid number
+            if optval.startswith('='): # Force value
+                optval = optval.removeprefix('=')
+                increment = 0
+                keyval = Decimal(optval)
             else:
-                pass
+                # might be string command
+                keyval = optval
+                self.Ledger[keycode] = keyval
+                return
+        
         else:
-            logger.error(f"Unknown argument:  {optval}")
+            logger.error(f"Unknown value/command:  '{optval}' of type {type(optval)}")
 
-            
+        if always_inc: # increment even if negative
+            increment = abs(increment)
         self.Ledger[keycode] = keyval + increment
         self.logger.info(f"keycode:{keycode} keyval:{keyval}, increment:{increment}")
+
     def dump_values(self,outfd):
-        '''Given a file descriptor, iterate line by line and parse comments'''
-        pass
+        '''Given a file descriptor, iterate line by line output the database'''
+        
 
 def main():
     """Main program loop"""
