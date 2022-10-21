@@ -86,7 +86,8 @@ class AssignmentAccountant():
     def dump_values(self,outfd):
         '''Given a file descriptor, iterate line by line output the database'''
         keyvals = sorted(self.Ledger.items())
-        print(keyvals)
+        for (key, val) in keyvals:
+            print(f"{key} {val}", file=outfd)
 
 def main():
     """Main program loop"""
