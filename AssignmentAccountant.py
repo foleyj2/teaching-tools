@@ -13,8 +13,10 @@ import re
 
 class AssignmentAccountant():
     Ledger = dict()
-    def __init__(self, infd, logger):
+    def __init__(self, infd, logger, ledger=None):
         self.logger = logger
+        if ledger:
+            self.ledger = ledger ## hack to allow OrderedDict
         detect_grade_re = re.compile(r'(^[A-Z]{2,}\d?\!?)(\(\S+\))?\:?(.*)')
         strip_outer_parens_re = re.compile(r'\((.*)\)')
         for line in infd:
