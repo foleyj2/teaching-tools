@@ -33,7 +33,7 @@ class AssignmentAccountant():
                         if optval_match:
                             optval = optval_match.group(1)
                             
-                    logger.warning(f"CODE: {code} OPTVAL: {optval} COMMENT: {comment}")
+                    logger.debug(f"CODE: {code} OPTVAL: {optval} COMMENT: {comment}")
                     self.parse_values(code, optval, comment)
     def parse_values(self, code, optval, comment, always_inc=True):
         """Take comment and turn into operations on ledger"""
@@ -53,7 +53,7 @@ class AssignmentAccountant():
                 self.Ledger[keycode] = keyval + increment
             else:
                 self.Ledger[keycode] = keyval
-            self.logger.info(f"keycode:{keycode} keyval:{keyval}, increment:{increment}")
+            self.logger.debug(f"keycode:{keycode} keyval:{keyval}, increment:{increment}")
         
         # what is going on with opval?
         increment = 0
@@ -137,7 +137,7 @@ def main():
       # Is this a PDF? If so, we need to extract the comments
       if inpath.suffix == ".pdf":
           import PdfAnnotations
-          pdfannotations = PdfAnnotations.PdfAnnotations(inpath)
+          pdfannotations = PdfAnnotations.PdfAnnotations(inpath,logger)
           input = pdfannotations.extract_comments()
       else:
           input = open(inpath)
