@@ -11,12 +11,17 @@ from datetime import datetime
 from decimal import *
 import re
 
+import PdfAnnotations
+
+
 class AssignmentAccountant():
-    Ledger = dict()
+    Ledger = None ## Will be a dict
     def __init__(self, infd, logger, ledger=None):
-        self.logger = logger
+        self.logger = logger        
         if ledger:
-            self.ledger = ledger ## hack to allow OrderedDict
+            self.Ledger = ledger ## hack to allow OrderedDict
+        else:
+            self.Ledger = dict()
         detect_grade_re = re.compile(r'(^[A-Z]{2,}\d?\!?)(\(\S+\))?\:?(.*)')
         strip_outer_parens_re = re.compile(r'\((.*)\)')
         for line in infd:
@@ -55,7 +60,7 @@ class AssignmentAccountant():
                 self.Ledger[keycode] = keyval + increment
             else:
                 self.Ledger[keycode] = keyval
-            self.logger.debug(f"keycode:{keycode} keyval:{keyval}, increment:{increment}")
+            self.logger.debug(f"keycode:{keycode} keyval:{keyval}, increment:{increment}")        
         
         # what is going on with opval?
         increment = 0
@@ -90,6 +95,9 @@ class AssignmentAccountant():
         keyvals = sorted(self.Ledger.items())
         for (key, val) in keyvals:
             print(f"{key} {val}", file=outfd)
+    def reset(self):
+       '''Prepare for another run'''
+       self.Ledger = dict()
 
 def main():
     """Main program loop"""
@@ -138,7 +146,6 @@ def main():
       input = None
       # Is this a PDF? If so, we need to extract the comments
       if inpath.suffix == ".pdf":
-          import PdfAnnotations
           pdfannotations = PdfAnnotations.PdfAnnotations(inpath,logger)
           input = pdfannotations.extract_comments()
       else:
