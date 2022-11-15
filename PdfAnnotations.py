@@ -9,6 +9,10 @@
 ##    Document https://poppler.freedesktop.org/api/qt5/classPoppler_1_1Document.html
 ##    Page https://poppler.freedesktop.org/api/qt5/classPoppler_1_1Page.html
 ##    Annotation https://poppler.freedesktop.org/api/qt5/classPoppler_1_1Annotation.html
+## WSL binding issues: if you installed Qt and get an error about it not existing, try
+## (from https://superuser.com/questions/1347723/arch-on-wsl-libqt5core-so-5-not-found-despite-being-installed )
+##   sudo strip --remove-section=.note.ABI-tag /usr/lib/x86_64-linux/libQt5Core.so.5
+
 from popplerqt5 import Poppler
 import sys
 #import urllib ##might be useful for extracting from web documents
