@@ -7,19 +7,31 @@
 ## Ubuntu install
 ##   sudo apt install python3-openpyxl
 ## Doc: https://openpyxl.readthedocs.io/en/stable/tutorial.html 
+import os
+import argparse
+import logging
+from datetime import datetime
+import re
 from openpyxl import load_workbook
 
 class ExcelRubric():
     """Handle all Excel operations."""
     def __init__(self, filepath, logger):
         self.logger = logger
-
+        self.wb = load_workbook(filename=filepath)
     ## TODO:  figure out how to deal with CODE heading and number or just CODES
         
     def get_codes(self):
         """Dump the grading code into a list"""
-        ## STUB
-        return list()
+        #ws = self.wb[0]
+        ws = self.wb.active # need to change to sheet 0 
+        firstrow = []
+        # first sheet first column
+        
+        for row in range(1, 100):  # TODO: find 3 empty rows
+            firstrow.append(ws.cell(column=1, row=row).value)
+        print(firstrow)
+        return firstrow
 
 
 def main():
@@ -59,12 +71,12 @@ def main():
     logger.addHandler(ch)
     logger.addHandler(fh)
 
-    logger.info("Creating AssignmentAccountant log file %s", logpath)
+    logger.info("Creating ExcelRubric log file %s", logpath)
 
-
-wb = load_workbook("templates/notebook-eval.xlsx")
-#print(wb.sheetnames)
-mysheet = wb["team1"]
-
+    ER = ExcelRubric(args.filepath[0], logger)
+    ER.get_codes()
 # STUB:  We know that codes are in column A
 # STUB:  We know that we need to update values in column C
+
+if __name__ == "__main__":
+  main()
