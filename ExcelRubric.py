@@ -16,23 +16,25 @@ from openpyxl import load_workbook
 
 class ExcelRubric():
     """Handle all Excel operations."""
-    def __init__(self, filepath, logger):
+    def __init__(self, filepath, logger, lastrow=100):
         self.logger = logger
         self.wb = load_workbook(filename=filepath)
     ## TODO:  figure out how to deal with CODE heading and number or just CODES
-        
-    def get_codes(self):
-        """Dump the grading code into a list"""
-        #ws = self.wb[0]
-        ws = self.wb.active # need to change to sheet 0 
-        firstrow = []
-        # first sheet first column
-        
-        for row in range(1, 100):  # TODO: find 3 empty rows
-            firstrow.append(ws.cell(column=1, row=row).value)
-        print(firstrow)
-        return firstrow
 
+        ws = self.wb.active # TODO need to change to sheet 0 
+        firstcol = []
+        
+        for row in range(1, lastrow):
+            val = ws.cell(column=1, row=row).value
+            if val is None:
+                next
+            else:
+                firstcol.append(val)
+        self.logger.debug(firstcol)
+        self.codes = firstcol
+
+    def get_codes(self):
+        return(self.codes)
 
 def main():
     """Main program loop"""
