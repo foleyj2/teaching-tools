@@ -11,12 +11,13 @@ import os
 import argparse
 import logging
 from datetime import datetime
+from collections import OrderedDict
 import re
 from openpyxl import load_workbook
 
 class ExcelRubric():
     """Handle all Excel operations."""
-    def __init__(self, filepath, logger, lastrow=100):
+    def __init__(self, filepath, logger, lastrow=100, startval=0):
         self.logger = logger
         self.wb = load_workbook(filename=filepath)
     ## TODO:  figure out how to deal with CODE heading and number or just CODES
@@ -31,8 +32,17 @@ class ExcelRubric():
             else:
                 firstcol.append(val)
         self.logger.debug(firstcol)
-        self.codes = firstcol
-
+        # convert for orderdict for later
+        codes = OrderedDict()
+        for k in firstcol:
+            codes[k] = startval
+        self.codes = codes
+    def dump_values(self,outfd):
+        '''Given a file descriptor, iterate line by line output the database'''
+        keyvals = sorted(self.codes.items())
+        for (key, val) in keyvals:
+            print(f"{key} {val}", file=outfd)
+        
     def get_codes(self):
         return(self.codes)
 
@@ -45,7 +55,7 @@ def main():
     parser.add_argument('filepath', nargs=argparse.REMAINDER)# TODO:  one file
     parser.add_argument('--log', default="INFO",
         help='Console log level:  Number or DEBUG, INFO, WARNING, ERROR')
-    parser.add_argument('--ext', default=".act",
+    parser.add_argument('--ext', default=".xlr",
                         help='Extension for output')
 
     args = parser.parse_args()
@@ -74,9 +84,15 @@ def main():
     logger.addHandler(fh)
 
     logger.info("Creating ExcelRubric log file %s", logpath)
-
-    ER = ExcelRubric(args.filepath[0], logger)
-    ER.get_codes()
+    for filepath in args.filepaths:
+        # filename pre-processing for output
+        inpath = PurePath(filepath)
+        outpath = inpath.with_suffix(args.ext)
+        print(f"File: {inpath} -> {outpath}")
+      with open(outpath, "w") as outfd:
+          ER = ExcelRubric(args.filepath[0], logger)
+          AA.dump_values(outfd)
+          print(ER.get_codes()
 # STUB:  We know that codes are in column A
 # STUB:  We know that we need to update values in column C
 

@@ -12,7 +12,7 @@ from decimal import *
 import re
 
 import PdfAnnotations
-
+import ExcelRubric
 
 class AssignmentAccountant():
     Ledger = None ## Will be a dict
@@ -84,10 +84,10 @@ class AssignmentAccountant():
             else:  # "It's not stupid.  It's AAADVANCED" -- The Tallest, Invader Zim
                 # might be string command
                 keyval = optval
-                increment = 0
-        
+                increment = 0        
         else:
             logger.error(f"Unknown value/command:  '{optval}' of type {type(optval)}")
+            
         updateentry(keyval, increment)
                 
     def dump_values(self,outfd):
@@ -95,8 +95,6 @@ class AssignmentAccountant():
         keyvals = sorted(self.Ledger.items())
         for (key, val) in keyvals:
             print(f"{key} {val}", file=outfd)
-    def reset(self):
-       '''Prepare for another run'''
        self.Ledger = dict()
 
 def main():
