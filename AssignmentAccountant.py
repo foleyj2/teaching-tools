@@ -12,7 +12,7 @@ from decimal import *
 import re
 
 import PdfAnnotations
-import ExcelRubric
+#import ExcelRubric
 
 class AssignmentAccountant():
     Ledger = None ## Will be a dict
@@ -95,7 +95,7 @@ class AssignmentAccountant():
         keyvals = sorted(self.Ledger.items())
         for (key, val) in keyvals:
             print(f"{key} {val}", file=outfd)
-       self.Ledger = dict()
+            
 
 def main():
     """Main program loop"""
