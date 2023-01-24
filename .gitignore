@@ -144,3 +144,4 @@ dmypy.json
 
 ## private files from application
 teaching-tools.ini
+*.xlsx
