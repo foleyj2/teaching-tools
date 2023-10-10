@@ -3,7 +3,12 @@
 Originally from https://levelup.gitconnected.com/sending-bulk-emails-via-python-4592b7ee57a5
 For sending while not on the RU network, you will need to use the SSL/TLS capability.  DON'T SHARE YOUR PASSWORD!
 The addresses will be loaded from an .xlsx file
+Alternative: Python mailmerge https://pypi.org/project/mailmerge
 
+Ubuntu install
+  sudo apt install python3-openpyxl
+
+WARNING:  This program is a work in progress and may break at any time.
 TODO:  move credentials to another file
 TODO:  command line options and interface for sending
 """
@@ -18,6 +23,11 @@ import sys
 #import pprint
 import logging
 import configparser #ConfigParser in py2 configparser in py3
+import re
+
+# Python Excel library
+# Doc: https://openpyxl.readthedocs.io/en/stable/tutorial.html 
+from openpyxl import load_workbook
 
 # Import smtplib for our actual email sending function
 import smtplib
@@ -93,8 +103,29 @@ class BulkMailer(object):
         self.config = config
         self.configfile = configfile
 
-    def load_senderdb(self):
-        pass
+    def load_senderdb(self, sheet=None):
+        """Excel file with sender and customization info"""
+
+        self.wb = load_workbook(filename=filepath)
+        # which sheet?  Assume first if not specified
+        ws = self.wb.active # TODO need to change to sheet 0        
+        if sheet:
+            ws = self.wb[sheet]
+        firstcol = []
+        
+        for row in range(1, lastrow):
+            val = ws.cell(column=1, row=row).value
+            if val is None:
+                next
+            else:
+                firstcol.append(val)
+        self.logger.debug(firstcol)
+        # convert for orderdict for later
+        codes = OrderedDict()
+        for k in firstcol:
+            codes[k] = startval
+        self.codes = codes
+
         
     def prepare_email(self):
         """Setup and check the email body"""
@@ -129,18 +160,18 @@ class BulkMailer(object):
 
 if __name__ == '__main__':
     PARSER = argparse.ArgumentParser(
-        description='Library for working with CANVAS REST API V.1')
+        description='Excel-db Bulk Mailer for EngineeringX')
     PARSER.add_argument('--version', action="version", version="%(prog)s 0.1")  #version init was depricated
-    PARSER.add_argument('course',#required!
-                        help='Which course to connect with')
+    PARSER.add_argument('emailtemplate',#required!
+                        help='email template')
     PARSER.add_argument('-c', '--configfile',
                         help='configuration file location (override)')
-    PARSER.add_argument('-s', '--site', default="test",
-                        help='Which site to interact with:  test(default), beta, or production')
-
+    parser.add_argument('--log', default="INFO",
+                        help='Console log level:  Number or DEBUG, INFO, WARNING, ERROR')
+    parser.add_argument('--test',
+                        help='Test mode:  No email sent, just messages')
+    
     ARGS=PARSER.parse_args()
 
-    MC = MyCanvas(args=ARGS)
-
-    #student_id = MC.students[0].id
-    #print MC.get_assignment_score(13838, student_id)
+    BM = BulkMailer(args=ARGS)
+    BM.load_senderdb()
