@@ -9,11 +9,16 @@
 ##    Additional Data:  Only the question author's content
 ## Output:  CSV with date, question, answer
 
+# Installation
+## Debian/ubuntu
+# sudo apt install python3-bs4
+
 import os
 import pathlib
 import argparse
 import logging
 from datetime import datetime
+from bs4 import BeautifulSoup
 #from collections import OrderedDict
 import re
 import csv
@@ -29,7 +34,9 @@ class PeerwiseCSV():
             reader = csv.DictReader(csvfile)
             for row in reader:
                 self.TagDB[int(row["question_id"])]=row["tag"]
-
+        def html2text(htmltext):
+            return str(BeautifulSoup(htmltext, 'html.parser').get_text())
+                
         # now read the questions
         with open(questionspath, newline="") as csvfile:            
             reader = csv.DictReader(csvfile)
@@ -40,8 +47,13 @@ class PeerwiseCSV():
                 valdimartag_re = re.compile(r"@(IA\d)\s*")
                 for row in reader:
                     questionid = int(row["id"])
-                    questiontext = row["question"]
                     self.logger.debug(f"Processing question ID: {questionid}")
+                    questiontext = row["question"]
+                    answerchoice = row["answer"]
+                    answertext = row["option"+answerchoice]                    
+                    # peerwise text is html, so we need to clean it up
+                    questiontext = html2text(questiontext)
+                    answertext = html2text(answertext)
                     
                     tag = self.TagDB.get(questionid, "")
                     # Valdimar didn't tag his questions right, he used @ID1 at the beginning
@@ -53,8 +65,7 @@ class PeerwiseCSV():
                             tag = match.group(1)
                             self.logger.warning(f"...found in-text tag {tag}, stripping tag from question")
                             questiontext = valdimartag_re.sub("", questiontext)
-                    answerchoice = row["answer"]
-                    cols = [row["timestamp"], tag, questiontext, row["option"+answerchoice]]
+                    cols = [row["timestamp"], tag, questiontext, answertext]
                     logger.debug(cols)
                     writer.writerow(cols)
                     
