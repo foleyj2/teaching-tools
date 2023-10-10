@@ -20,17 +20,34 @@ import csv
 
 class PeerwiseCSV():
     """Handle all Peerwise CSV operations."""
-    def __init__(self, filepath, logger, outpath):
+    TagDB = {}
+    def __init__(self, questionspath, tagspath, logger, outpath):
         self.logger = logger
-        with open(filepath, newline="") as csvfile:            
+        # first we load the tags into a DB
+        self.logger.info(f"Creating Tag DB from {tagspath}")
+        with open(tagspath, newline="") as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                self.TagDB[int(row["question_id"])]=row["tag"]
+
+        # now read the questions
+        with open(questionspath, newline="") as csvfile:            
             reader = csv.DictReader(csvfile)
             with open(outpath, "w", newline='') as outputfile:
                 writer = csv.writer(outputfile)
-                headings = ["timestamp", "question", "answer"]
+                headings = ["timestamp", "tag", "question", "answer"]
                 writer.writerow(headings)
                 for row in reader:
-                    answerid = row["answer"]
-                    cols = [row["timestamp"], row["question"], row["option"+answerid]]
+                    questionid = int(row["id"])
+                    self.logger.info(f"Processing question ID: {questionid}")
+                    
+                    tag = self.TagDB.get(questionid, "")
+                    # Valdimar didn't tag his questions right, he used @ID1 at the beginning
+                    # TODO:  search the question for @IDX to get the tag
+                    #if tag = "":                                            
+                    
+                    answerchoice = row["answer"]
+                    cols = [row["timestamp"], tag, row["question"], row["option"+answerchoice]]
                     logger.debug(cols)
                     writer.writerow(cols)
                     
@@ -51,7 +68,8 @@ def main():
     From https://github.com/foleyj2/teaching-tools""")
     parser = argparse.ArgumentParser(
         description="Load CSV file and manipulate.")
-    parser.add_argument('filepaths', nargs=argparse.REMAINDER)# TODO:  one file
+    parser.add_argument('questionspath')# TODO:  one file
+    parser.add_argument('tagspath')# TODO:  one file
     parser.add_argument('--log', default="INFO",
         help='Console log level:  Number or DEBUG, INFO, WARNING, ERROR')
 
@@ -81,16 +99,13 @@ def main():
     logger.addHandler(fh)
 
     logger.info("Creating Peerwise Extract log file %s", logpath)
-    for filepath in args.filepaths:
-        # filename pre-processing for output
-        inpath = pathlib.PurePath(filepath)
-        outpath = inpath.with_suffix(".csq")
-        print(f"File: {inpath} -> {outpath}")
-        PE = PeerwiseCSV(args.filepaths[0], logger, outpath)
-        #PE.dump_values(outfd)
-          #print(ER.get_codes()
-# STUB:  We know that codes are in column A
-# STUB:  We know that we need to update values in column C
+    # filename pre-processing for output
+    qpath = pathlib.PurePath(args.questionspath)
+    outpath = qpath.with_suffix(".csq")
+    print(f"File: {qpath} -> {outpath}")
+    PE = PeerwiseCSV(qpath, args.tagspath, logger, outpath)
+    #PE.dump_values(outfd)
+    #print(ER.get_codes()
 
 if __name__ == "__main__":
   main()
