@@ -37,15 +37,21 @@ class PeerwiseCSV():
                 writer = csv.writer(outputfile)
                 headings = ["timestamp", "tag", "question", "answer"]
                 writer.writerow(headings)
+                valdimartag_re = re.compile(r"@(IA\d)")
                 for row in reader:
                     questionid = int(row["id"])
-                    self.logger.info(f"Processing question ID: {questionid}")
+                    questiontext = row["question"]
+                    self.logger.debug(f"Processing question ID: {questionid}")
                     
                     tag = self.TagDB.get(questionid, "")
                     # Valdimar didn't tag his questions right, he used @ID1 at the beginning
                     # TODO:  search the question for @IDX to get the tag
-                    #if tag = "":                                            
-                    
+                    if tag == "":
+                        self.logger.warning(f"WARNING!  No tags for question {questiontext}")
+                        match = valdimartag_re.search(questiontext)
+                        if match:
+                            tag = match.group(1)
+                            self.logger.warning(f"...found in-text tag {tag}")
                     answerchoice = row["answer"]
                     cols = [row["timestamp"], tag, row["question"], row["option"+answerchoice]]
                     logger.debug(cols)
