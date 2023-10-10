@@ -37,7 +37,7 @@ class PeerwiseCSV():
                 writer = csv.writer(outputfile)
                 headings = ["timestamp", "tag", "question", "answer"]
                 writer.writerow(headings)
-                valdimartag_re = re.compile(r"@(IA\d)")
+                valdimartag_re = re.compile(r"@(IA\d)\s*")
                 for row in reader:
                     questionid = int(row["id"])
                     questiontext = row["question"]
@@ -51,9 +51,10 @@ class PeerwiseCSV():
                         match = valdimartag_re.search(questiontext)
                         if match:
                             tag = match.group(1)
-                            self.logger.warning(f"...found in-text tag {tag}")
+                            self.logger.warning(f"...found in-text tag {tag}, stripping tag from question")
+                            questiontext = valdimartag_re.sub("", questiontext)
                     answerchoice = row["answer"]
-                    cols = [row["timestamp"], tag, row["question"], row["option"+answerchoice]]
+                    cols = [row["timestamp"], tag, questiontext, row["option"+answerchoice]]
                     logger.debug(cols)
                     writer.writerow(cols)
                     
