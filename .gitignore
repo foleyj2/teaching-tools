@@ -141,3 +141,7 @@ dmypy.json
 # application temporary output files
 *.act
 *.cmt
+
+## private files from application
+teaching-tools.ini
+*.xlsx
