@@ -6,6 +6,7 @@ There are other repositories for MySchool and CANVAS related tools
 TODO:  add links to them on this readme
 
 
+* anon-files.py: shuffles and copies files with anonomized (number) filenames
 * bind-pdfs.sh: automates binding pdfs together from feedback forms
 * extract-pdf-annotations.py: Grabs text comments from PDF to enable automated grading
 * listcalc.py: takes lists of numbers from standard input and outputs a calculated grade
