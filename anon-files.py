@@ -7,6 +7,7 @@
 import os
 from os.path import isfile, join
 import pathlib
+import shutil
 import argparse
 import random
 
@@ -24,6 +25,9 @@ origfiles = [f for f in os.listdir(args.filepath)
              if isfile(join(args.filepath, f))]
 random.shuffle(origfiles)
 
+targetpath = join(args.filepath, "Anon")
+os.makedirs(targetpath, exist_ok=True)
+
 fileid = 1
 for origfile in origfiles:
     #separate file from extension
@@ -32,5 +36,6 @@ for origfile in origfiles:
     dstfile = f"{fileid}{ext}"
     dst = join(args.filepath, "Anon", dstfile)
     print(f"{src} -> {dst}")
+    shutil.copyfile(src, dst)
     fileid += 1
     
