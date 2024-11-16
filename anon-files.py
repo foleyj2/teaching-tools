@@ -6,8 +6,9 @@
 ## Output:  new folder anon with files renamed with random sequence numbers
 import os
 from os.path import isfile, join
+import pathlib
 import argparse
-import logging
+import random
 
 """Main program loop"""
 print("""Anonmyzer of Files by Joseph. T. Foley<foley AT ru DOT is>
@@ -21,4 +22,15 @@ args = parser.parse_args()
 # get list of filenames from the path
 origfiles = [f for f in os.listdir(args.filepath)
              if isfile(join(args.filepath, f))]
-print(origfiles)
+random.shuffle(origfiles)
+
+fileid = 1
+for origfile in origfiles:
+    #separate file from extension
+    ext = pathlib.Path(origfile).suffix
+    src = join(args.filepath, origfile)
+    dstfile = f"{fileid}{ext}"
+    dst = join(args.filepath, "Anon", dstfile)
+    print(f"{src} -> {dst}")
+    fileid += 1
+    
