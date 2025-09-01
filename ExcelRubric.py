@@ -8,6 +8,7 @@
 ##   sudo apt install python3-openpyxl
 ## Doc: https://openpyxl.readthedocs.io/en/stable/tutorial.html 
 import os
+from pathlib import PurePath
 import argparse
 import logging
 from datetime import datetime
@@ -52,7 +53,7 @@ def main():
     From https://github.com/foleyj2/teaching-tools""")
     parser = argparse.ArgumentParser(
         description="Load XLS file and manipulate.")
-    parser.add_argument('filepath', nargs=argparse.REMAINDER)# TODO:  one file
+    parser.add_argument('filepath')
     parser.add_argument('--log', default="INFO",
         help='Console log level:  Number or DEBUG, INFO, WARNING, ERROR')
     parser.add_argument('--ext', default=".xlr",
@@ -84,15 +85,14 @@ def main():
     logger.addHandler(fh)
 
     logger.info("Creating ExcelRubric log file %s", logpath)
-    for filepath in args.filepaths:
-        # filename pre-processing for output
-        inpath = PurePath(filepath)
-        outpath = inpath.with_suffix(args.ext)
-        print(f"File: {inpath} -> {outpath}")
-      with open(outpath, "w") as outfd:
-          ER = ExcelRubric(args.filepath[0], logger)
-          AA.dump_values(outfd)
-          print(ER.get_codes()
+    # filename pre-processing for output
+    inpath = PurePath(args.filepath)
+    outpath = inpath.with_suffix(args.ext)
+    print(f"File: {inpath} -> {outpath}")
+    with open(outpath, "w") as outfd:
+        ER = ExcelRubric(inpath, logger)
+        AA.dump_values(outfd)
+        print(ER.get_codes())
 # STUB:  We know that codes are in column A
 # STUB:  We know that we need to update values in column C
 
