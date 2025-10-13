@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-## Process the txt output from Peerwise into a format we can print out
+## Process the xml output from Peerwise into a format we can print out
 ## By Joseph T. Foley <foley AT RU.IS>
 ## Created 2025-10-13
 ## Redhat:
@@ -137,7 +137,7 @@ class PeerwiseParse():
             
 def main():
     """Main program loop"""
-    print("peerwisexml2tex by Joseph. T. Foley<foley AT ru DOT is>")
+    print("peerwise-extract by Joseph. T. Foley<foley AT ru DOT is>")
     parser = argparse.ArgumentParser(
         description="Process Peerwise txt files into .tex.")
     parser.add_argument('filename',
